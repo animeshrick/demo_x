@@ -1,0 +1,114 @@
+{
+  "project_info": {
+    "project_number": "215601477724",
+    "project_id": "perspective-oauth2",
+    "storage_bucket": "perspective-oauth2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215601477724:android:507604045215a512a70e99",
+        "android_client_info": {
+          "package_name": "com.example.dualites"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "215601477724-t51faon3nr0e14u17bgebu45m4eriane.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dualites",
+            "certificate_hash": "9a25c1a0d94f3faf38afcca111a56efcc7b261e1"
+          }
+        },
+        {
+          "client_id": "215601477724-g2fg29dnp4pc158pm5piji1s7ioea7sn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC531a9mx-eDMIil7HyPkGQWdH-7uJ5-bg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "215601477724-g2fg29dnp4pc158pm5piji1s7ioea7sn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "215601477724-4u1mjf1qd56cjsbkqf0uvttpv3tdav73.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.perspective"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215601477724:android:e2657ddf738d714aa70e99",
+        "android_client_info": {
+          "package_name": "xyz.dualite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "215601477724-8dceap2uopse9eklrbhp6ugo7m4ph0er.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "xyz.dualite",
+            "certificate_hash": "823ea5355515d6d02ed6a3d71913b9b0dd836d0d"
+          }
+        },
+        {
+          "client_id": "215601477724-das0f2l69ova5fhgqc5plf3809jj4dpb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "xyz.dualite",
+            "certificate_hash": "606277c421699e2c830ad08e8309e433be2a504b"
+          }
+        },
+        {
+          "client_id": "215601477724-unl2nkea18ttgbtuujkd592v5hjjun7b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "xyz.dualite",
+            "certificate_hash": "9a25c1a0d94f3faf38afcca111a56efcc7b261e1"
+          }
+        },
+        {
+          "client_id": "215601477724-g2fg29dnp4pc158pm5piji1s7ioea7sn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC531a9mx-eDMIil7HyPkGQWdH-7uJ5-bg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "215601477724-g2fg29dnp4pc158pm5piji1s7ioea7sn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "215601477724-4u1mjf1qd56cjsbkqf0uvttpv3tdav73.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.perspective"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
