@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dualites/modules/upload/getx/gallery_controller.dart';
 import 'package:dualites/modules/upload/getx/gallery_state.dart';
 import 'package:dualites/shared/controller/category/category_list_controller.dart';
+import 'package:dualites/shared/widgets/da_raised_button_widget/da_raised_button_widget.dart';
 import 'package:dualites/shared/widgets/image_widget/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +13,6 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:share/share.dart';
 import 'package:video_editor/utils/controller.dart';
 import 'package:video_editor/video_editor.dart';
-import 'package:video_trimmer/video_trimmer.dart';
 class VideosPost extends StatefulWidget{
   VideosPostState createState()=>VideosPostState();
 }
@@ -28,43 +28,31 @@ class VideosPostState extends State<VideosPost>{
   VideoEditorController videoEditorController1;
   VideoEditorController videoEditorController2;
   final GalleryController galleryController=Get.find();
-  Trimmer _trimmer1=Trimmer();
-  Trimmer _trimmer2=Trimmer();
-
-  double _startValue1 = 0.0;
-  double _endValue1 = 0.0;
-
-
-  double _startValue2 = 0.0;
-  double _endValue2 = 0.0;
-
+  bool isFirstVideoExporting=false;
+  bool isSecondVideoExporting=false;
+  bool canBeLoaded=true;
 
   void initState(){
     super.initState();
     initializeControllerAndFile();
   }
 
-  void _loadVideo(Trimmer trimmer,File file) {
-    trimmer.loadVideo(videoFile: file);
-  }
   initializeControllerAndFile()async{
     File file=await galleryController.selectedAssets[0].file;
-    _loadVideo(_trimmer1, file);
-/*
     File file2=await galleryController.selectedAssets[1].file;
-    _loadVideo(_trimmer2, file);*/
-      /*videoEditorController1 = VideoEditorController.file(file);
-      videoEditorController2=VideoEditorController.file(file2);
-      await videoEditorController1.initialize();
-      await videoEditorController2.initialize();*/
-      setState(() {
+    videoEditorController1 = VideoEditorController.file(file);
+    videoEditorController2=VideoEditorController.file(file2);
+    await videoEditorController1.initialize();
+    await videoEditorController2.initialize();
+    setState(() {
+      /*if(videoEditorController1.video.value.duration<=Duration(seconds: 30,minutes: 1,milliseconds: 100000)){
+        canBeLoaded=true;
+      }*/
+    });
 
-      });
-    
   }
   @override
   Widget build(BuildContext context) {
-
     return Obx(() {
       if(galleryController.state is PostVideoSuccessState){
         PostVideoSuccessState state= galleryController.state as PostVideoSuccessState;
@@ -76,23 +64,23 @@ class VideosPostState extends State<VideosPost>{
         showDialog(context: context,
             barrierDismissible: true,
             builder: (context){
-          return AlertDialog(
-            title: Center(child: Text("Share Link"),),
-            content: Container(
-              height: MediaQuery.of(context).size.height*0.2,
-              width: MediaQuery.of(context).size.width*0.8,
-              child: Center(
-                child: Text(state.deepLinkUrl),
-              ),
-            ),
-            actions: [
-              OutlineButton(onPressed: ()=>Navigator.pop(context),child: Center(child: Text("Cancel"),),),
-              RaisedButton(onPressed: (){
-                Share.share(state.deepLinkUrl);
-              },child: Center(child: Text("Share"),),)
-            ],
-          );
-        });
+              return AlertDialog(
+                title: Center(child: Text("Share Link"),),
+                content: Container(
+                  height: MediaQuery.of(context).size.height*0.2,
+                  width: MediaQuery.of(context).size.width*0.8,
+                  child: Center(
+                    child: Text(state.deepLinkUrl),
+                  ),
+                ),
+                actions: [
+                  OutlineButton(onPressed: ()=>Navigator.pop(context),child: Center(child: Text("Cancel"),),),
+                  RaisedButton(onPressed: (){
+                    Share.share(state.deepLinkUrl);
+                  },child: Center(child: Text("Share"),),)
+                ],
+              );
+            });
       }
       if(galleryController.state is PostVideoErrorState){
 
@@ -114,10 +102,16 @@ class VideosPostState extends State<VideosPost>{
                   child: InkWell(
                     onTap: () {
                       galleryController.typeController.text=selectedVal;
-                      if(imageFile!=null && imageFile.path.trim()!="")
-                        galleryController.postVideoContent(imageFile,categoriesList,context);
-                      else
-                        galleryController.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please Add a thumbnail Image")));
+                      if(!canBeLoaded && galleryController.resizedFiles.length<2){
+                        galleryController.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please export files first")));
+                      }
+                      else{
+                        if(imageFile!=null && imageFile.path.trim()!="")
+                          galleryController.postVideoContent(imageFile,categoriesList,context);
+                        else
+                          galleryController.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please Add a thumbnail Image")));
+                      }
+
                     },
                     child: Text("Post"),
                   ),
@@ -132,18 +126,34 @@ class VideosPostState extends State<VideosPost>{
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                /*TrimEditor(
-                viewerHeight: 50.0,
-
-                viewerWidth: MediaQuery.of(context).size.width,
-                    maxVideoLength: Duration(seconds: 90),
-                onChangeStart: (value) {
-                  _startValue1 = value;
-                },
-                onChangeEnd: (value) {
-                  _endValue1 = value;
-                }
-              ),*/
+                  canBeLoaded ?Container():Column(children:_trimSlider(videoEditorController1, 0)),
+                  canBeLoaded ?Container():Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      DaRaisedButtonWidget(
+                        buttonText: "Ok",
+                        callback: isFirstVideoExporting ?null:(){
+                          _exportVideo(videoEditorController1, 0);
+                        },
+                        textColor: Colors.white,
+                        disabledButtontext: "Exporting",
+                      )
+                    ],
+                  ),
+                  canBeLoaded ?Container():Column(children:_trimSlider(videoEditorController2, 1)),
+                  canBeLoaded ?Container():Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      DaRaisedButtonWidget(
+                        buttonText: "Ok",
+                        callback: isSecondVideoExporting ?null:(){
+                          _exportVideo(videoEditorController2, 1);
+                        },
+                        textColor: Colors.white,
+                        disabledButtontext: "Exporting",
+                      )
+                    ],
+                  ),
                   Form(
                     key: galleryController.formKey,
                     child: Column(
@@ -204,24 +214,23 @@ class VideosPostState extends State<VideosPost>{
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height*0.2,
+                          //                   height: MediaQuery.of(context).size.height*0.2,
                           child: Wrap(
-                            children:
+                              children:
                               newTags.map((e) {
                                 return Padding(
                                     padding:const EdgeInsets.all(5.0),child: Chip(label: Text(e,style: TextStyle(color: Colors.white),),backgroundColor: Colors.blue,));
                               }).toList()
 
                           ),
-                        )
-                        /*
+                        ),
                         DropdownButton(isExpanded: true,items: typeOfVideos.map((e){
                           return DropdownMenuItem(child: Text(e),value: e,);
                         }).toList(), onChanged: (String val){
                           setState(() {
                             selectedVal=val;
                           });
-                        },value: selectedVal,),
+                        },value: selectedVal,),/*
                         CategorySelection(tags: tags,callback: (List<String> categories){
                           setState(() {
                             categoriesList = categories.toString();
@@ -241,6 +250,36 @@ class VideosPostState extends State<VideosPost>{
     }
     );
   }
+
+  Future<void> _exportVideo(VideoEditorController controller,int index) async {
+    if(index==1 && isFirstVideoExporting==true){
+      galleryController.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("First Video export has to complete first")));
+
+    }else if(index==0 && isSecondVideoExporting==true){
+      galleryController.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Second Video export has to complete first")));
+    }
+    else {
+      setState(() {
+        if (index == 0) {
+          isFirstVideoExporting = true;
+        }
+        else {
+          isSecondVideoExporting = true;
+        }
+      });
+      File file = await controller.exportVideo(
+          name: "video_$index"
+      );
+      setState(() {
+        if (index == 0)
+          isFirstVideoExporting = false;
+        else
+          isSecondVideoExporting = false;
+      });
+      galleryController.resizedFiles[index]=file;
+    }
+  }
+
   String formatter(Duration duration) => [
     duration.inMinutes.remainder(60).toString().padLeft(2, '0'),
     duration.inSeconds.remainder(60).toString().padLeft(2, '0')
@@ -276,10 +315,9 @@ class VideosPostState extends State<VideosPost>{
         height: MediaQuery.of(context).size.height*0.1,
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: TrimSlider(
-            maxDuration: controller.videoDuration,
-            controller: controller,
-            height: MediaQuery.of(context).size.height*0.1,
-            ),
+          controller: controller,
+          height: MediaQuery.of(context).size.height*0.1,
+        ),
       )
     ];
   }

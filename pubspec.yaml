@@ -32,7 +32,7 @@ dependencies:
   google_fonts:
   lottie:
   get:
-  image_picker:
+  image_picker: ^0.6.4
   dio:
   equatable:
   shared_preferences:
@@ -49,8 +49,6 @@ dependencies:
   multiselect_formfield:
   http:
   video_editor:
-  helpers:
-  video_trimmer:
 dev_dependencies:
   flutter_test:
     sdk: flutter
